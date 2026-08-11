@@ -462,29 +462,91 @@
 <div class="section" id="tab-organic">
   <div class="section-label">Organic & Visibility</div>
   <div class="section-title">SEO + Google Business Profile — July 2026</div>
-  <div class="section-desc">Organic performance reflects people finding Serengeti Care through unpaid Google search. GBP data for July 2026 is pending — the sheet currently has data through May 2026.</div>
+  <div class="section-desc">Organic performance reflects people finding Serengeti Care through unpaid Google search. GBP data is live from the July 2026 location sheet.</div>
 
-  <div class="three-col">
+  <!-- SEO KPIs -->
+  <div class="stat-strip" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px;">
+    <div class="stat-tile">
+      <div class="stat-val">1,078</div>
+      <div class="stat-label">Organic users</div>
+      <div class="stat-sub" style="color:#dc2626;">↓ from 1,140 in June</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-val">56</div>
+      <div class="stat-label">Organic conversions</div>
+      <div class="stat-sub" style="color:#dc2626;">↓ from 76 in June</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-val">99</div>
+      <div class="stat-label">Keywords — page 1</div>
+      <div class="stat-sub">Stable · 19 on page 2</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-val">27</div>
+      <div class="stat-label">Domain authority</div>
+      <div class="stat-sub">↑ from 21 at start</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-val">45%</div>
+      <div class="stat-label">Engagement rate</div>
+      <div class="stat-sub">Steady vs June (47%)</div>
+    </div>
+  </div>
+
+  <div class="two-col">
     <div class="card">
-      <div class="card-title">Organic visitors (June 2026)</div>
-      <div style="font-size:22px;font-weight:800;color:var(--teal);margin-bottom:4px;">1,395</div>
-      <div style="font-size:12px;color:var(--sage);">Highest organic month yet. July 2026 data pending — expect similar or higher based on trend.</div>
+      <div class="card-title">Organic users — 6-month trend</div>
+      <div class="card-desc">July dipped slightly to 1,078 after June's 1,140. This is a normal seasonal fluctuation — the 12-month trend remains strongly positive.</div>
+      <div style="height:200px;position:relative;"><canvas id="organicUsersChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title">Keywords on Google page 1</div>
-      <div style="font-size:22px;font-weight:800;color:var(--teal);margin-bottom:4px;">99</div>
-      <div style="font-size:12px;color:var(--sage);">Stable. 19 more keywords sit on page 2 — next priority is pushing these to page 1.</div>
-    </div>
-    <div class="card">
-      <div class="card-title">GBP July 2026</div>
-      <div style="font-size:22px;font-weight:800;color:#94a3b8;margin-bottom:4px;">Pending</div>
-      <div style="font-size:12px;color:var(--sage);">Add a July 2026 tab to the GBP sheet to populate this section next month.</div>
+      <div class="card-title">Organic conversions — 6-month trend</div>
+      <div class="card-desc">Conversions dropped from 76 to 56 in July. Still well above the historical baseline of 16–41/month from 2025. Worth monitoring in August.</div>
+      <div style="height:200px;position:relative;"><canvas id="organicConvChart"></canvas></div>
     </div>
   </div>
 
   <div class="insight warn">
-    <div class="insight-label">GBP July 2026 data not yet added</div>
-    <div class="insight-text">The GBP spreadsheet has tabs through May 2026. To complete this section, add a July 2026 tab with the same per-location format. Once added, this section will show impressions, direction clicks, calls, and website clicks for every branch.</div>
+    <div class="insight-label">Slight July dip in organic — context matters</div>
+    <div class="insight-text">Organic users dropped ~5% and conversions dropped ~26% compared to June. This is worth watching but not alarming — July is historically softer for home care search volume, and the numbers are still dramatically better than a year ago (56 conversions vs 41 in July 2025). If August stays low, that's when to investigate further.</div>
+  </div>
+
+  <hr class="div">
+
+  <!-- GBP SECTION -->
+  <div class="section-label" style="margin-bottom:6px;">Google Business Profile</div>
+  <div style="font-size:19px;font-weight:700;color:var(--teal);margin-bottom:4px;">GBP by location — July 2026</div>
+  <div class="section-desc">How each branch performed on Google Maps and Search. Impressions = times listed was seen. Direction clicks = strong purchase intent. Phone calls = highest-intent action from a listing.</div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Top locations by direction clicks</div>
+      <div class="card-desc">Puyallup leads the network with 105 direction clicks — the highest of any location this month.</div>
+      <div style="height:300px;position:relative;"><canvas id="gbpDirChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top locations by GBP impressions</div>
+      <div class="card-desc">Idaho Falls, Lynnwood, and Clackamas lead for listing visibility across Google Search and Maps.</div>
+      <div style="height:300px;position:relative;"><canvas id="gbpImprChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">All locations — GBP July 2026</div>
+    <div class="card-desc">Full breakdown for every active branch. Bremerton is flagged as "Verification needed" — the listing may need attention in GBP.</div>
+    <div class="table-wrap" style="margin-bottom:0;">
+      <table class="lt">
+        <thead>
+          <tr><th>Location</th><th>Impressions</th><th>Map Impr.</th><th>Direction Clicks</th><th>Phone Calls</th><th>Web Clicks</th><th>Intent Signal</th></tr>
+        </thead>
+        <tbody id="gbpJulyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="insight warn">
+    <div class="insight-label">Bremerton listing needs verification</div>
+    <div class="insight-text">The Bremerton GBP listing shows "Verification needed" in the July data sheet. This means the listing may be suspended or unverified in Google Business Profile, which would prevent it from appearing in Google Maps searches. This should be resolved as a priority — a suspended listing means potential clients in that area can't find the branch organically.</div>
   </div>
 </div>
 
@@ -703,6 +765,63 @@ reviewsYtd.forEach(r => {
     <td>${badge}</td>
   </tr>`;
 });
+
+// ── ORGANIC CHARTS ──
+const organicMonths6 = ['Feb','Mar','Apr','May','Jun','Jul'];
+new Chart(document.getElementById('organicUsersChart'),{type:'line',data:{
+  labels:organicMonths6,
+  datasets:[{label:'Organic users',data:[1107,1282,1195,1249,1140,1078],borderColor:'#0d6b54',backgroundColor:'rgba(13,107,84,0.07)',borderWidth:2.5,pointBackgroundColor:'#0d6b54',pointRadius:4,fill:true,tension:0.3}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{display:false}},y:{min:900,ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(13,107,84,0.07)'}}}}});
+
+new Chart(document.getElementById('organicConvChart'),{type:'bar',data:{
+  labels:organicMonths6,
+  datasets:[{label:'Conversions',data:[30,77,77,84,76,56],backgroundColor:organicMonths6.map((m,i)=>i===5?'#308671':'rgba(48,134,113,0.45)'),borderRadius:4}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{display:false}},y:{ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(13,107,84,0.07)'}}}}});
+
+// ── GBP JULY DATA ──
+const gbpJuly = [
+  {loc:'Bellingham, WA',    imp:273, map:74,  dir:84,  calls:9,  web:45},
+  {loc:'Bend, OR',          imp:109, map:61,  dir:58,  calls:1,  web:10},
+  {loc:'Caldwell, ID',      imp:19,  map:4,   dir:20,  calls:0,  web:2},
+  {loc:'Bremerton, WA',     imp:null,map:352, dir:51,  calls:6,  web:22},
+  {loc:'Clackamas, OR',     imp:343, map:483, dir:76,  calls:28, web:11},
+  {loc:'Kennewick, WA',     imp:213, map:60,  dir:71,  calls:24, web:25},
+  {loc:'Lewiston, ID',      imp:295, map:57,  dir:63,  calls:18, web:17},
+  {loc:'Lynnwood, WA',      imp:698, map:105, dir:52,  calls:16, web:39},
+  {loc:'Moses Lake, WA',    imp:185, map:40,  dir:45,  calls:9,  web:23},
+  {loc:'Pullman, WA',       imp:193, map:46,  dir:39,  calls:36, web:37},
+  {loc:'Puyallup, WA',      imp:514, map:381, dir:105, calls:7,  web:10},
+  {loc:'Renton, WA',        imp:499, map:107, dir:68,  calls:29, web:57},
+  {loc:'Sandpoint, ID',     imp:253, map:41,  dir:34,  calls:9,  web:23},
+  {loc:'Spokane, WA',       imp:368, map:67,  dir:50,  calls:27, web:36},
+  {loc:'Tigard, OR',        imp:145, map:61,  dir:62,  calls:2,  web:7},
+  {loc:'Univ. Place, WA',   imp:324, map:66,  dir:56,  calls:9,  web:14},
+  {loc:'Vancouver, WA',     imp:223, map:62,  dir:28,  calls:9,  web:19},
+  {loc:'Walla Walla, WA',   imp:293, map:45,  dir:40,  calls:27, web:20},
+  {loc:'Wenatchee, WA',     imp:277, map:60,  dir:47,  calls:24, web:30},
+  {loc:'Missoula, MT',      imp:378, map:156, dir:45,  calls:12, web:29},
+  {loc:'Post Falls, ID',    imp:310, map:63,  dir:46,  calls:14, web:35},
+  {loc:'Idaho Falls, ID',   imp:508, map:225, dir:43,  calls:18, web:18},
+];
+
+const gbpJulyBody = document.getElementById('gbpJulyBody');
+[...gbpJuly].sort((a,b)=>b.dir-a.dir).forEach(r => {
+  const impDisplay = r.imp===null ? '<span style="color:#f59e0b;font-size:11px;">⚠️ Verify listing</span>' : r.imp.toLocaleString();
+  const sig = r.dir>=70?'<span class="src src-web">High intent</span>':r.dir>=40?'<span class="src src-fb">Good</span>':'<span class="src src-other">Building</span>';
+  gbpJulyBody.innerHTML += `<tr><td class="loc">${r.loc}</td><td>${impDisplay}</td><td>${r.map}</td><td><strong>${r.dir}</strong></td><td>${r.calls}</td><td>${r.web}</td><td>${sig}</td></tr>`;
+});
+
+const top8dir = [...gbpJuly].filter(d=>d.imp!==null).sort((a,b)=>b.dir-a.dir).slice(0,8);
+new Chart(document.getElementById('gbpDirChart'),{type:'bar',data:{
+  labels:top8dir.map(d=>d.loc.split(',')[0]),
+  datasets:[{label:'Direction clicks',data:top8dir.map(d=>d.dir),backgroundColor:TEAL,borderRadius:4}]
+},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(13,107,84,0.07)'}},y:{ticks:{color:SAGE,font:{size:11}}}}}});
+
+const top8impr = [...gbpJuly].filter(d=>d.imp!==null).sort((a,b)=>b.imp-a.imp).slice(0,8);
+new Chart(document.getElementById('gbpImprChart'),{type:'bar',data:{
+  labels:top8impr.map(d=>d.loc.split(',')[0]),
+  datasets:[{label:'Impressions',data:top8impr.map(d=>d.imp),backgroundColor:MID,borderRadius:4}]
+},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(13,107,84,0.07)'}},y:{ticks:{color:SAGE,font:{size:11}}}}}});
 
 // ── CAMPAIGNS ──
 const campaigns=[
