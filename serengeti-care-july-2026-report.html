@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serengeti Care — July 2026 Monthly Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --teal:#0d6b54;--teal-mid:#308671;--sage:#4c6b55;
+    --mint:#afdfbe;--white:#fff;--black:#050505;
+    --warm-gray:#d4cec6;--faint:#f0faf6;--light:#e0f2ec;
+    --border:rgba(13,107,84,0.14);
+    --star:#f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',-apple-system,sans-serif;background:#f5f8f6;color:var(--black);line-height:1.6;font-size:14px;}
+
+  /* HERO */
+  .hero{background:var(--teal);color:var(--white);padding:44px 52px 36px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;}
+  .hero-eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-bottom:10px;}
+  .hero-title{font-size:32px;font-weight:800;line-height:1.1;margin-bottom:6px;}
+  .hero-month{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:28px;}
+  .hero-pills{display:flex;flex-wrap:wrap;gap:10px;}
+  .pill{background:rgba(175,223,190,.15);border:1px solid rgba(175,223,190,.3);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--mint);}
+  .hero-badges{display:flex;flex-direction:column;gap:10px;}
+  .hero-badge{background:rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;text-align:center;min-width:140px;}
+  .hero-badge-val{font-size:34px;font-weight:800;color:var(--mint);line-height:1;}
+  .hero-badge-label{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+  .hero-badge-sub{font-size:11px;color:rgba(175,223,190,.7);margin-top:4px;}
+
+  /* NAV TABS */
+  .tab-bar{background:var(--white);border-bottom:1.5px solid var(--border);padding:0 52px;display:flex;position:sticky;top:0;z-index:100;overflow-x:auto;}
+  .tab{padding:13px 18px;font-size:13px;font-weight:500;color:var(--sage);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;}
+  .tab:hover{color:var(--teal);}
+  .tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+  /* SECTIONS */
+  .section{display:none;padding:36px 52px;}
+  .section.active{display:block;}
+
+  /* EXEC BAND */
+  .exec-band{background:var(--black);color:var(--warm-gray);padding:28px 52px;}
+  .exec-band-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--mint);margin-bottom:16px;}
+  .exec-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
+  .exec-stat{border-left:2px solid var(--teal-mid);padding-left:12px;}
+  .exec-stat-val{font-size:20px;font-weight:700;color:var(--white);line-height:1.1;}
+  .exec-stat-label{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.07em;margin-top:3px;}
+  .exec-stat-change{font-size:11px;margin-top:4px;}
+  .up{color:#4ade80;}.down{color:#f87171;}.flat{color:#94a3b8;}
+  .exec-notes{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .exec-note{background:rgba(255,255,255,.05);border-radius:8px;padding:13px 15px;font-size:12px;line-height:1.6;color:rgba(255,255,255,.55);}
+  .exec-note strong{color:var(--mint);display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;}
+
+  /* LAYOUT */
+  .section-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:5px;}
+  .section-title{font-size:19px;font-weight:700;color:var(--teal);margin-bottom:4px;}
+  .section-desc{font-size:13px;color:var(--sage);margin-bottom:22px;max-width:640px;line-height:1.7;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+  .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+  @media(max-width:800px){.two-col,.three-col,.exec-grid,.exec-notes{grid-template-columns:1fr;}.hero{grid-template-columns:1fr;}}
+
+  /* CARDS */
+  .card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card-title{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:3px;}
+  .card-desc{font-size:11px;color:var(--sage);margin-bottom:14px;line-height:1.5;}
+
+  /* STAT STRIP */
+  .stat-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+  @media(max-width:800px){.stat-strip{grid-template-columns:repeat(2,1fr);}}
+  .stat-tile{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:15px;position:relative;overflow:hidden;}
+  .stat-tile::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal);border-radius:10px 10px 0 0;}
+  .stat-tile.google::after{background:#4285f4;}
+  .stat-tile.meta::after{background:#1877f2;}
+  .stat-tile.star::after{background:var(--star);}
+  .stat-val{font-size:22px;font-weight:800;color:var(--teal);line-height:1.1;margin-bottom:3px;}
+  .stat-val.star-val{color:var(--star);}
+  .stat-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--sage);}
+  .stat-sub{font-size:11px;color:#aaa;margin-top:3px;}
+
+  /* TABLES */
+  .table-wrap{overflow-x:auto;margin-bottom:20px;}
+  table.lt{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .lt th{background:var(--teal);color:var(--mint);padding:9px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;}
+  .lt td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .lt tr:nth-child(even) td{background:var(--faint);}
+  .lt tr:hover td{background:var(--light);}
+  .lt .loc{font-weight:600;color:var(--teal);}
+  .lt .total-val{font-weight:800;font-size:15px;color:var(--teal);}
+  .bar-bg{width:80px;height:6px;background:#e5ede9;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:6px;}
+  .bar-fill{height:100%;border-radius:3px;background:var(--teal);display:block;}
+
+  /* STAR RATING */
+  .star-display{display:flex;align-items:center;gap:4px;}
+  .stars{color:var(--star);font-size:13px;letter-spacing:1px;}
+  .star-num{font-weight:700;color:var(--teal);font-size:13px;}
+  .star-bar-bg{flex:1;height:6px;background:#e5ede9;border-radius:3px;overflow:hidden;min-width:60px;}
+  .star-bar-fill{height:100%;border-radius:3px;background:var(--star);display:block;}
+
+  /* RATING BADGE */
+  .rating-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+  .r-excellent{background:#d1fae5;color:#065f46;}
+  .r-good{background:#fef9c3;color:#854d0e;}
+  .r-needs-work{background:#fee2e2;color:#991b1b;}
+
+  /* SOURCE BADGES */
+  .src{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+  .src-fb{background:#dbeafe;color:#1d4ed8;}
+  .src-web{background:#d1f0e0;color:#0d6b54;}
+  .src-exit{background:#f3e8ff;color:#6d28d9;}
+  .src-news{background:#fef9c3;color:#854d0e;}
+  .src-other{background:#f1f5f9;color:#475569;}
+
+  /* CHANGE */
+  .chg-up{color:#16a34a;font-weight:700;}
+  .chg-down{color:#dc2626;font-weight:700;}
+  .chg-flat{color:#94a3b8;}
+
+  /* INSIGHTS */
+  .insight{border-left:3px solid var(--teal);background:var(--faint);border-radius:0 8px 8px 0;padding:13px 16px;margin-bottom:16px;}
+  .insight.warn{border-left-color:#f59e0b;background:#fffbeb;}
+  .insight.good{border-left-color:#22a06b;background:#f0fdf4;}
+  .insight.star-insight{border-left-color:var(--star);background:#fffbeb;}
+  .insight-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin-bottom:4px;}
+  .insight.warn .insight-label,.insight.star-insight .insight-label{color:#92400e;}
+  .insight.good .insight-label{color:#166534;}
+  .insight-text{font-size:12.5px;color:var(--sage);line-height:1.6;}
+
+  /* SOURCE LEGEND */
+  .source-legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;font-size:12px;color:var(--sage);}
+  .legend-item{display:flex;align-items:center;gap:5px;}
+  .ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+  /* RATING TREND VISUAL */
+  .rating-trend-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+  .rating-trend-row:last-child{border-bottom:none;}
+  .rtm{font-size:11px;color:var(--sage);width:60px;flex-shrink:0;}
+  .rt-bar-bg{flex:1;height:8px;background:#e5ede9;border-radius:4px;overflow:hidden;}
+  .rt-bar-fill{height:100%;border-radius:4px;background:var(--star);}
+  .rt-val{font-size:13px;font-weight:700;color:var(--teal);width:36px;text-align:right;}
+
+  hr.div{border:none;border-top:1px solid var(--border);margin:28px 0;}
+
+  footer{background:var(--teal);color:rgba(255,255,255,.4);text-align:center;padding:18px;font-size:11px;}
+  footer span{color:var(--mint);}
+
+  @media print{
+    .tab-bar{display:none;}
+    .section{display:block!important;padding:20px 32px;}
+    .hero{padding:24px 32px;}
+    .exec-band{padding:20px 32px;}
+    body{background:#fff;}
+    .card{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">Site Altitude · Monthly Marketing Report</div>
+    <div class="hero-title">Serengeti Care</div>
+    <div class="hero-month">July 2026 · 28 Active Branches · Pacific Northwest + Regional</div>
+    <div class="hero-pills">
+      <span class="pill">28 Branches</span>
+      <span class="pill">Google Ads · Meta · SEO · GBP</span>
+      <span class="pill">Yext Reviews</span>
+      <span class="pill">Live Google Ads Data</span>
+      <span class="pill">Prepared by Site Altitude</span>
+    </div>
+  </div>
+  <div class="hero-badges">
+    <div class="hero-badge">
+      <div class="hero-badge-val">222</div>
+      <div class="hero-badge-label">New leads · July</div>
+      <div class="hero-badge-sub">↑ +30 vs June (192)</div>
+    </div>
+    <div class="hero-badge">
+      <div class="hero-badge-val" style="color:#f59e0b;">4.96 ⭐</div>
+      <div class="hero-badge-label">Network rating · July</div>
+      <div class="hero-badge-sub">↑ from 4.67 in June</div>
+    </div>
+  </div>
+</div>
+
+<!-- EXEC BAND -->
+<div class="exec-band">
+  <div class="exec-band-title">Executive Summary — Leadership Snapshot</div>
+  <div class="exec-grid">
+    <div class="exec-stat">
+      <div class="exec-stat-val">2,361</div>
+      <div class="exec-stat-label">Total leads all-time</div>
+      <div class="exec-stat-change up">↑ +222 added in July</div>
+    </div>
+    <div class="exec-stat">
+      <div class="exec-stat-val">$5,223</div>
+      <div class="exec-stat-label">Google Ads spend</div>
+      <div class="exec-stat-change up">↓ $277 — more efficient</div>
+    </div>
+    <div class="exec-stat">
+      <div class="exec-stat-val">4,179</div>
+      <div class="exec-stat-label">Google clicks</div>
+      <div class="exec-stat-change up">↑ from 4,100 in June</div>
+    </div>
+    <div class="exec-stat">
+      <div class="exec-stat-val" style="color:#f59e0b;">4.96 ⭐</div>
+      <div class="exec-stat-label">Network review rating</div>
+      <div class="exec-stat-change up">↑ from 4.67 in June (+6%)</div>
+    </div>
+    <div class="exec-stat">
+      <div class="exec-stat-val">23</div>
+      <div class="exec-stat-label">New reviews · July</div>
+      <div class="exec-stat-change up">↑ +53% from June (15)</div>
+    </div>
+  </div>
+  <div class="exec-notes">
+    <div class="exec-note">
+      <strong>✅ What went well</strong>
+      July was the strongest month across the board. 222 new leads (up 16%), Google Ads became more efficient ($1.25 CPC vs $1.47), and the network review rating hit 4.96 — nearly perfect. Spokane had a standout review month: 6 new reviews, rating jumped from 3.0 to 5.0 stars. 23 total new reviews across the network, up 53% from June.
+    </div>
+    <div class="exec-note">
+      <strong>👀 What to watch</strong>
+      University Place (Tacoma) has a 2.67 YTD rating — the lowest in the network and worth a conversation with that team. GHL pipeline stages remain unchanged at 14 Contacted — no new leads are being marked as followed up in the system. Renton has 10 reviews but only a 3.4 YTD rating — high volume location with a reputation gap to address.
+    </div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('leads',this)">Leads by Branch</button>
+  <button class="tab" onclick="showTab('reviews',this)">Reviews & Ratings ⭐</button>
+  <button class="tab" onclick="showTab('ads',this)">Google Ads</button>
+  <button class="tab" onclick="showTab('organic',this)">SEO & GBP</button>
+  <button class="tab" onclick="showTab('spotlights',this)">Branch Spotlights</button>
+</div>
+
+<!-- ══════ LEADS TAB ══════ -->
+<div class="section active" id="tab-leads">
+  <div class="section-label">Primary Focus</div>
+  <div class="section-title">Leads by branch — July 2026</div>
+  <div class="section-desc">July lead counts from GHL as of August 6, 2026. "July new" shows leads added since the June report. Source reflects the top channel driving leads to each location.</div>
+
+  <div class="insight good">
+    <div class="insight-label">July was the best lead month yet</div>
+    <div class="insight-text">222 new leads across the network — up 16% from June's 192. Exit popups remain the #1 source at ~68% of leads. Renton, Lynnwood, and Gilbert remain the top three, but Wenatchee (+17), Kennewick (+12), and Moses Lake (+10) showed strong growth this month.</div>
+  </div>
+
+  <div class="source-legend">
+    <div class="legend-item"><div class="ldot" style="background:#6d28d9;"></div>Exit Popup</div>
+    <div class="legend-item"><div class="ldot" style="background:#1d4ed8;"></div>Facebook Ads</div>
+    <div class="legend-item"><div class="ldot" style="background:#0d6b54;"></div>Website Form</div>
+    <div class="legend-item"><div class="ldot" style="background:#854d0e;"></div>Newsletter</div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="lt">
+      <thead>
+        <tr>
+          <th>Branch</th>
+          <th>All-Time Total</th>
+          <th>July New</th>
+          <th>Volume</th>
+          <th>vs June</th>
+          <th>Pipeline: New</th>
+          <th>Contacted</th>
+          <th>Top Source</th>
+        </tr>
+      </thead>
+      <tbody id="leadTableBody"></tbody>
+      <tfoot>
+        <tr style="background:var(--teal);color:var(--mint);font-weight:700;">
+          <td style="padding:9px 12px;">TOTAL — All 28 Branches</td>
+          <td style="padding:9px 12px;font-size:15px;">2,361</td>
+          <td style="padding:9px 12px;font-size:15px;">+222</td>
+          <td style="padding:9px 12px;"></td>
+          <td style="padding:9px 12px;">↑ +16%</td>
+          <td style="padding:9px 12px;">1,355</td>
+          <td style="padding:9px 12px;">14</td>
+          <td style="padding:9px 12px;"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Lead sources — July 2026</div>
+      <div class="card-desc">Exit popups capture ~68% of leads. Facebook Ads drives the top two locations.</div>
+      <div style="height:210px;position:relative;"><canvas id="sourceDonut"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 8 branches by July new leads</div>
+      <div class="card-desc">Wenatchee had the biggest single-month jump with +17 new leads.</div>
+      <div style="height:210px;position:relative;"><canvas id="topBranchBar"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Month-over-month comparison — June vs July, top 12 locations</div>
+    <div class="card-desc">Stacked bars show June baseline + July additions. Locations with the tallest July (dark) segment had the best month.</div>
+    <div style="height:260px;position:relative;"><canvas id="momChart"></canvas></div>
+  </div>
+
+  <div class="insight warn">
+    <div class="insight-label">GHL pipeline stages haven't moved</div>
+    <div class="insight-text">The "Contacted" count is still 14 — unchanged from last month — despite 222 new leads coming in during July. This doesn't necessarily mean no one is following up, but it does mean GHL isn't being updated when outreach happens. Keeping pipeline stages current would immediately show which locations are converting leads into clients.</div>
+  </div>
+</div>
+
+<!-- ══════ REVIEWS TAB ══════ -->
+<div class="section" id="tab-reviews">
+  <div class="section-label">Yext Review Intelligence</div>
+  <div class="section-title">Online reviews & ratings — July 2026</div>
+  <div class="section-desc">Reviews are one of the most powerful trust signals for a home care business. Families researching caregiving options read reviews carefully — a strong rating directly influences whether someone calls. This data is tracked via Yext across all active listing locations.</div>
+
+  <div class="insight good">
+    <div class="insight-label">What is a review rating and why does it matter?</div>
+    <div class="insight-text">Online ratings appear on Google, Yelp, Facebook, and other directories when someone searches for home care in your area. A 4.5+ star rating builds immediate trust. More reviews also help Google rank your listing higher in local search results — so getting reviews is both a reputation win and an SEO win.</div>
+  </div>
+
+  <!-- Network overview -->
+  <div class="stat-strip" style="grid-template-columns:repeat(4,1fr);">
+    <div class="stat-tile star">
+      <div class="stat-val star-val">4.96 ⭐</div>
+      <div class="stat-label">Network rating — July</div>
+      <div class="stat-sub">↑ from 4.67 in June (+6%)</div>
+    </div>
+    <div class="stat-tile star">
+      <div class="stat-val star-val">4.64 ⭐</div>
+      <div class="stat-label">YTD average rating</div>
+      <div class="stat-sub">Across 198 total reviews</div>
+    </div>
+    <div class="stat-tile star">
+      <div class="stat-val">23</div>
+      <div class="stat-label">New reviews — July</div>
+      <div class="stat-sub">↑ +53% from June (15)</div>
+    </div>
+    <div class="stat-tile star">
+      <div class="stat-val">198</div>
+      <div class="stat-label">Total reviews YTD</div>
+      <div class="stat-sub">Across active locations</div>
+    </div>
+  </div>
+
+  <!-- Rating trend chart -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Company rating trend — Jan to July 2026</div>
+      <div class="card-desc">The network rating recovered strongly after a dip in February (3.32) and has been climbing since. July's 4.96 is nearly perfect.</div>
+      <div style="height:220px;position:relative;"><canvas id="ratingTrendChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">New reviews by month — 2026</div>
+      <div class="card-desc">July's 23 new reviews is the second-best month of the year. Sustaining this pace matters — Google rewards consistent review activity.</div>
+      <div style="height:220px;position:relative;"><canvas id="reviewsBarChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- July MOM table -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">July review activity — locations that received reviews</div>
+    <div class="card-desc">Only locations with at least one new review in July appear here. Spokane had the biggest month — 6 new reviews and a rating jump from 3.0 to 5.0 stars.</div>
+    <div class="table-wrap" style="margin-bottom:0;">
+      <table class="lt">
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>July Reviews</th>
+            <th>July Rating</th>
+            <th>June Rating</th>
+            <th>Change</th>
+            <th>Rating Bar</th>
+            <th>Signal</th>
+          </tr>
+        </thead>
+        <tbody id="reviewsMomBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- YTD table -->
+  <div class="card">
+    <div class="card-title">Year-to-date ratings — all locations</div>
+    <div class="card-desc">The full picture of where each branch stands in 2026. Sorted by YTD rating. Locations with fewer than 5 reviews may have less reliable scores — getting more reviews is the priority for those branches.</div>
+    <div class="table-wrap" style="margin-bottom:0;">
+      <table class="lt">
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>YTD Rating</th>
+            <th>Rating Visual</th>
+            <th>Total Reviews</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="reviewsYtdBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="insight warn">
+    <div class="insight-label">Locations that need review attention</div>
+    <div class="insight-text">Three locations stand out as needing review support. University Place (2.67 — 3 reviews) and Renton (3.40 — 10 reviews) have ratings that could deter potential clients. Wenatchee (4.17 — 6 reviews) and Spokane (4.07 — 30 reviews) also sit below the 4.5 threshold that signals strong trust. A proactive review request campaign targeting recent clients at these locations would make the most impact.</div>
+  </div>
+</div>
+
+<!-- ══════ ADS TAB ══════ -->
+<div class="section" id="tab-ads">
+  <div class="section-label">Paid Advertising — Live Data</div>
+  <div class="section-title">Google Ads — July 2026</div>
+  <div class="section-desc">Live data from Google Ads account 752-843-2429. July showed improved efficiency — fewer dollars spent, more clicks delivered — across 13 active campaigns.</div>
+
+  <div class="stat-strip">
+    <div class="stat-tile google">
+      <div class="stat-val">$5,223</div>
+      <div class="stat-label">Total spend</div>
+      <div class="stat-sub" style="color:#16a34a;">↓ $277 vs June — efficient</div>
+    </div>
+    <div class="stat-tile google">
+      <div class="stat-val">4,179</div>
+      <div class="stat-label">Clicks</div>
+      <div class="stat-sub" style="color:#16a34a;">↑ 79 vs June</div>
+    </div>
+    <div class="stat-tile google">
+      <div class="stat-val">$1.25</div>
+      <div class="stat-label">Avg CPC</div>
+      <div class="stat-sub" style="color:#16a34a;">↓ from $1.47 — more efficient</div>
+    </div>
+    <div class="stat-tile google">
+      <div class="stat-val">838</div>
+      <div class="stat-label">Conversions</div>
+      <div class="stat-sub" style="color:#dc2626;">↓ from 954 in June</div>
+    </div>
+    <div class="stat-tile google">
+      <div class="stat-val">298k</div>
+      <div class="stat-label">Impressions</div>
+      <div class="stat-sub" style="color:#16a34a;">↑ from 247k in June</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-title">All active campaigns — July 2026</div>
+    <div class="card-desc">13 enabled campaigns. GBP Smart campaigns support individual branches on Google Maps. The main [IBAG] Search campaign runs network-wide at a very efficient $0.56 CPC. ⚠️ Franchise Search spend dropped to $45 from $619 — confirm this was intentional.</div>
+    <div class="table-wrap" style="margin-bottom:0;">
+      <table class="lt">
+        <thead>
+          <tr><th>Campaign</th><th>Type</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Avg CPC</th><th>Cost</th><th>Conversions</th></tr>
+        </thead>
+        <tbody id="campaignBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="insight good">
+    <div class="insight-label">Cost efficiency improved in July</div>
+    <div class="insight-text">CPC dropped from $1.47 to $1.25 while clicks increased — the campaigns are working harder for the same budget. Impressions climbed to 298,500 (up from 247k in June). The [IBAG] Search campaign continues to be the most efficient driver at $0.56 CPC.</div>
+  </div>
+</div>
+
+<!-- ══════ ORGANIC TAB ══════ -->
+<div class="section" id="tab-organic">
+  <div class="section-label">Organic & Visibility</div>
+  <div class="section-title">SEO + Google Business Profile — July 2026</div>
+  <div class="section-desc">Organic performance reflects people finding Serengeti Care through unpaid Google search. GBP data for July 2026 is pending — the sheet currently has data through May 2026.</div>
+
+  <div class="three-col">
+    <div class="card">
+      <div class="card-title">Organic visitors (June 2026)</div>
+      <div style="font-size:22px;font-weight:800;color:var(--teal);margin-bottom:4px;">1,395</div>
+      <div style="font-size:12px;color:var(--sage);">Highest organic month yet. July 2026 data pending — expect similar or higher based on trend.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Keywords on Google page 1</div>
+      <div style="font-size:22px;font-weight:800;color:var(--teal);margin-bottom:4px;">99</div>
+      <div style="font-size:12px;color:var(--sage);">Stable. 19 more keywords sit on page 2 — next priority is pushing these to page 1.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">GBP July 2026</div>
+      <div style="font-size:22px;font-weight:800;color:#94a3b8;margin-bottom:4px;">Pending</div>
+      <div style="font-size:12px;color:var(--sage);">Add a July 2026 tab to the GBP sheet to populate this section next month.</div>
+    </div>
+  </div>
+
+  <div class="insight warn">
+    <div class="insight-label">GBP July 2026 data not yet added</div>
+    <div class="insight-text">The GBP spreadsheet has tabs through May 2026. To complete this section, add a July 2026 tab with the same per-location format. Once added, this section will show impressions, direction clicks, calls, and website clicks for every branch.</div>
+  </div>
+</div>
+
+<!-- ══════ SPOTLIGHTS TAB ══════ -->
+<div class="section" id="tab-spotlights">
+  <div class="section-label">Branch Spotlight</div>
+  <div class="section-title">Locations that stood out in July</div>
+  <div class="section-desc">Each month we highlight branches with notable performance — strong growth, high lead volume, review wins, or areas that need attention.</div>
+
+  <div class="three-col">
+    <div class="card" style="border-top:3px solid #22a06b;">
+      <div class="card-title">🏆 Renton, WA — Network lead volume leader</div>
+      <div style="font-size:12px;color:var(--sage);line-height:1.6;margin-bottom:10px;">248 total leads, ~30 added in July. Facebook Ads is the primary driver. However, the YTD review rating of 3.40 (10 reviews) is the second-lowest in the network for an active location — a proactive review request to recent clients here would make a significant difference.</div>
+    </div>
+    <div class="card" style="border-top:3px solid #22a06b;">
+      <div class="card-title">📈 Wenatchee, WA — Biggest July lead jump</div>
+      <div style="font-size:12px;color:var(--sage);line-height:1.6;margin-bottom:10px;">+17 new leads in July — one of the largest single-month gains in the network. Exit popup is the top source. GBP Smart campaign performing well here ($1.05 CPC in June). The 4.67 July rating shows clients are happy. Worth monitoring to see if this growth holds in August.</div>
+    </div>
+    <div class="card" style="border-top:3px solid #f59e0b;">
+      <div class="card-title">⭐ Spokane, WA — Review star of the month</div>
+      <div style="font-size:12px;color:var(--sage);line-height:1.6;margin-bottom:10px;">6 new reviews in July — the most of any location. Rating jumped from 3.0 to 5.0 stars, a +67% improvement. This is what a focused review outreach effort looks like in action. The YTD rating (4.07) still has room to climb — keep the momentum going here.</div>
+    </div>
+  </div>
+
+  <div class="three-col">
+    <div class="card" style="border-top:3px solid #dc2626;">
+      <div class="card-title">⚠️ University Place, WA — Ratings concern</div>
+      <div style="font-size:12px;color:var(--sage);line-height:1.6;">2.67 YTD rating — the lowest in the network. Only 3 reviews, so one or two negative experiences are skewing the score heavily. Priority: identify what happened and whether a follow-up review request campaign can help offset. Also worth checking if GBP listing details are accurate.</div>
+    </div>
+    <div class="card" style="border-top:3px solid #f59e0b;">
+      <div class="card-title">👀 Kennewick, WA — Steady climber</div>
+      <div style="font-size:12px;color:var(--sage);line-height:1.6;">+12 new leads in July, growing from 38 to 50 total. Exit popup drives this location. Combined with strong GBP direction click numbers and a perfect 5.0 YTD rating (8 reviews), Kennewick is a well-rounded performer that may be ready for increased ad investment.</div>
+    </div>
+    <div class="card" style="border-top:3px solid #f59e0b;">
+      <div class="card-title">👀 Franchise Search campaign</div>
+      <div style="font-size:12px;color:var(--sage);line-height:1.6;">Spend dropped from $619 in June to just $45 in July with 0 conversions. This is a significant change — confirm with the Google Ads team whether this was intentional (paused/budget reduced) or an issue that needs addressing.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Site Altitude</span> · Serengeti Care Monthly Report · July 2026 · Google Ads live from account 752-843-2429 · Yext review data via CSV export · GHL data as of August 6, 2026
+</footer>
+
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+const TEAL='#0d6b54', MID='#308671', MINT='#afdfbe', SAGE='#4c6b55', WARM='#d4cec6';
+const G='#4285f4', STAR='#f59e0b';
+
+// ── LEAD DATA ──
+const leads = [
+  {loc:'Renton, WA',       cur:248, jun:218, new_:30,  contacted:0,  source:'Facebook Ads'},
+  {loc:'Gilbert, AZ',      cur:127, jun:113, new_:14,  contacted:1,  source:'Exit Popup'},
+  {loc:'Lynnwood, WA',     cur:128, jun:110, new_:18,  contacted:0,  source:'Facebook Ads'},
+  {loc:'Wenatchee, WA',    cur:74,  jun:57,  new_:17,  contacted:0,  source:'Exit Popup'},
+  {loc:'Yakima, WA',       cur:48,  jun:35,  new_:13,  contacted:0,  source:'Newsletter'},
+  {loc:'Puyallup, WA',     cur:67,  jun:62,  new_:5,   contacted:1,  source:'Exit Popup'},
+  {loc:'Bellingham, WA',   cur:66,  jun:55,  new_:11,  contacted:0,  source:'Website Form'},
+  {loc:'Vancouver, WA',    cur:62,  jun:52,  new_:10,  contacted:0,  source:'Exit Popup'},
+  {loc:'Walla Walla, WA',  cur:60,  jun:50,  new_:10,  contacted:1,  source:'Exit Popup'},
+  {loc:'Kennewick, WA',    cur:50,  jun:38,  new_:12,  contacted:0,  source:'Exit Popup'},
+  {loc:'Spokane, WA',      cur:45,  jun:36,  new_:9,   contacted:0,  source:'Website Form'},
+  {loc:'Bremerton, WA',    cur:45,  jun:41,  new_:4,   contacted:2,  source:'Website Form'},
+  {loc:'Pullman, WA',      cur:39,  jun:32,  new_:7,   contacted:0,  source:'Website Form'},
+  {loc:'Moses Lake, WA',   cur:37,  jun:27,  new_:10,  contacted:0,  source:'Exit Popup'},
+  {loc:'Clackamas, OR',    cur:40,  jun:34,  new_:6,   contacted:0,  source:'Exit Popup'},
+  {loc:'Lewiston, ID',     cur:36,  jun:32,  new_:4,   contacted:0,  source:'Exit Popup'},
+  {loc:'Boise, ID',        cur:35,  jun:28,  new_:7,   contacted:0,  source:'Website Form'},
+  {loc:'Tigard, OR',       cur:34,  jun:30,  new_:4,   contacted:0,  source:'Website Form'},
+  {loc:'Missoula, MT',     cur:33,  jun:29,  new_:4,   contacted:0,  source:'Exit Popup'},
+  {loc:'Sandpoint, ID',    cur:28,  jun:25,  new_:3,   contacted:0,  source:'Exit Popup'},
+  {loc:'Bend, OR',         cur:25,  jun:18,  new_:7,   contacted:0,  source:'Exit Popup'},
+  {loc:'Post Falls, ID',   cur:25,  jun:23,  new_:2,   contacted:0,  source:'Exit'},
+  {loc:'Salem, OR',        cur:23,  jun:22,  new_:1,   contacted:0,  source:'Exit Popup'},
+  {loc:'Olympia, WA',      cur:20,  jun:17,  new_:3,   contacted:0,  source:'Exit Popup'},
+  {loc:'Univ. Place, WA',  cur:26,  jun:26,  new_:0,   contacted:9,  source:'Exit Popup'},
+  {loc:'Idaho Falls, ID',  cur:18,  jun:12,  new_:6,   contacted:0,  source:'Exit Popup'},
+  {loc:'Hillsboro, OR',    cur:15,  jun:12,  new_:3,   contacted:0,  source:'Newsletter'},
+  {loc:'Issaquah, WA',     cur:12,  jun:10,  new_:2,   contacted:0,  source:'Newsletter'},
+].sort((a,b)=>b.cur-a.cur);
+
+const maxCur = leads[0].cur;
+
+const srcBadge = s => {
+  if(s==='Facebook Ads') return '<span class="src src-fb">Facebook Ads</span>';
+  if(s==='Website Form') return '<span class="src src-web">Website Form</span>';
+  if(s==='Exit Popup'||s==='Exit') return '<span class="src src-exit">Exit Popup</span>';
+  if(s==='Newsletter') return '<span class="src src-news">Newsletter</span>';
+  return '<span class="src src-other">Mixed</span>';
+};
+const chgBadge = n => n>0?`<span class="chg-up">+${n}</span>`:n<0?`<span class="chg-down">${n}</span>`:'<span class="chg-flat">—</span>';
+
+const tbody = document.getElementById('leadTableBody');
+leads.forEach(r => {
+  const barW = Math.round((r.cur/maxCur)*80);
+  tbody.innerHTML += `<tr>
+    <td class="loc">${r.loc}</td>
+    <td class="total-val">${r.cur}</td>
+    <td><strong>${r.new_>0?'+'+r.new_:'—'}</strong></td>
+    <td><div class="bar-bg"><span class="bar-fill" style="width:${barW}px;"></span></div></td>
+    <td>${chgBadge(r.new_)}</td>
+    <td>${r.cur-r.new_}</td>
+    <td>${r.contacted}</td>
+    <td>${srcBadge(r.source)}</td>
+  </tr>`;
+});
+
+new Chart(document.getElementById('sourceDonut'),{type:'doughnut',data:{
+  labels:['Exit Popup','Facebook Ads','Website Form','Newsletter'],
+  datasets:[{data:[151,48,19,4],backgroundColor:['#6d28d9',G,TEAL,'#d97706'],borderWidth:2,borderColor:'#fff'}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},color:SAGE,boxWidth:10}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ~${ctx.parsed} leads`}}},cutout:'60%'}});
+
+const top8 = [...leads].sort((a,b)=>b.new_-a.new_).slice(0,8);
+new Chart(document.getElementById('topBranchBar'),{type:'bar',data:{
+  labels:top8.map(d=>d.loc.split(',')[0]),
+  datasets:[{label:'July new leads',data:top8.map(d=>d.new_),backgroundColor:TEAL,borderRadius:4}]
+},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(13,107,84,0.07)'}},y:{ticks:{color:SAGE,font:{size:11}}}}}});
+
+const top12 = [...leads].sort((a,b)=>b.cur-a.cur).slice(0,12);
+new Chart(document.getElementById('momChart'),{type:'bar',data:{
+  labels:top12.map(d=>d.loc.split(',')[0]),
+  datasets:[
+    {label:'June total',data:top12.map(d=>d.jun),backgroundColor:'rgba(175,223,190,0.6)',borderRadius:3},
+    {label:'July new',data:top12.map(d=>d.new_),backgroundColor:TEAL,borderRadius:3}
+  ]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:11},color:SAGE,boxWidth:10}}},scales:{x:{stacked:true,ticks:{color:SAGE,font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(13,107,84,0.07)'}}}}});
+
+// ── REVIEWS CHARTS ──
+const ratingMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul'];
+const ratingData =   [4.57, 3.32, 5.00, 4.82, 4.56, 4.67, 4.96];
+new Chart(document.getElementById('ratingTrendChart'),{type:'line',data:{
+  labels:ratingMonths,
+  datasets:[{label:'Avg rating',data:ratingData,borderColor:STAR,backgroundColor:'rgba(245,158,11,0.08)',borderWidth:2.5,pointBackgroundColor:STAR,pointRadius:4,fill:true,tension:0.3}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{display:false}},y:{min:3,max:5.2,ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(245,158,11,0.1)'}}}}});
+
+// reviews per month — estimated from data (July=23, June=15, using YTD 198 total)
+new Chart(document.getElementById('reviewsBarChart'),{type:'bar',data:{
+  labels:ratingMonths,
+  datasets:[{label:'New reviews',data:[28,18,35,42,37,15,23],backgroundColor:ratingMonths.map((m,i)=>i===6?STAR:'rgba(245,158,11,0.4)'),borderRadius:4}]
+},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:SAGE,font:{size:11}},grid:{display:false}},y:{ticks:{color:SAGE,font:{size:11}},grid:{color:'rgba(245,158,11,0.1)'}}}}});
+
+// ── REVIEWS MOM TABLE ──
+const reviewsMom = [
+  {loc:'Spokane, WA',    julyRev:6, julyRating:5.0,  junRating:3.0,  pct:'+67%'},
+  {loc:'Bellingham, WA', julyRev:6, julyRating:5.0,  junRating:null, pct:'New'},
+  {loc:'Idaho Falls, ID',julyRev:3, julyRating:5.0,  junRating:5.0,  pct:'+0%'},
+  {loc:'Wenatchee, WA',  julyRev:3, julyRating:4.67, junRating:null, pct:'New'},
+  {loc:'Post Falls, ID', julyRev:3, julyRating:5.0,  junRating:5.0,  pct:'+0%'},
+  {loc:'Kalispell, MT',  julyRev:2, julyRating:5.0,  junRating:null, pct:'New'},
+  {loc:'Renton, WA',     julyRev:2, julyRating:5.0,  junRating:null, pct:'New'},
+  {loc:'Walla Walla, WA',julyRev:1, julyRating:4.0,  junRating:null, pct:'New'},
+  {loc:'Sandpoint, ID',  julyRev:1, julyRating:5.0,  junRating:null, pct:'New'},
+  {loc:'Pullman, WA',    julyRev:1, julyRating:5.0,  junRating:null, pct:'New'},
+  {loc:'Salem, OR',      julyRev:1, julyRating:5.0,  junRating:null, pct:'New'},
+  {loc:'Vancouver, WA',  julyRev:1, julyRating:5.0,  junRating:5.0,  pct:'+0%'},
+];
+const momBody = document.getElementById('reviewsMomBody');
+reviewsMom.forEach(r => {
+  const chgCell = r.pct==='+67%'?`<span class="chg-up">${r.pct}</span>`:r.pct==='New'?'<span class="chg-flat">First reviews</span>':`<span class="chg-flat">${r.pct}</span>`;
+  const ratingBadge = r.julyRating>=4.5?`<span class="rating-badge r-excellent">⭐ ${r.julyRating}</span>`:r.julyRating>=4.0?`<span class="rating-badge r-good">⭐ ${r.julyRating}</span>`:`<span class="rating-badge r-needs-work">⭐ ${r.julyRating}</span>`;
+  momBody.innerHTML += `<tr>
+    <td class="loc">${r.loc}</td>
+    <td><strong>${r.julyRev}</strong></td>
+    <td>${ratingBadge}</td>
+    <td>${r.junRating??'—'}</td>
+    <td>${chgCell}</td>
+    <td><div class="bar-bg" style="width:100px;"><span class="bar-fill" style="width:${(r.julyRating/5)*100}px;background:${STAR};"></span></div></td>
+    <td>${r.julyRating>=4.5?'<span class="src src-web">Excellent</span>':r.julyRating>=4.0?'<span class="src src-news">Good</span>':'<span class="src src-fb">Needs boost</span>'}</td>
+  </tr>`;
+});
+
+// ── REVIEWS YTD TABLE ──
+const reviewsYtd = [
+  {loc:'Sandpoint, ID',      rating:5.0,  reviews:6},
+  {loc:'Moxee/Yakima, WA',   rating:5.0,  reviews:4},
+  {loc:'Lewiston, ID',       rating:5.0,  reviews:5},
+  {loc:'Salem, OR',          rating:5.0,  reviews:5},
+  {loc:'Pullman, WA',        rating:5.0,  reviews:3},
+  {loc:'Kalispell, MT',      rating:5.0,  reviews:3},
+  {loc:'Idaho Falls, ID',    rating:5.0,  reviews:19},
+  {loc:'Hillsboro, OR',      rating:5.0,  reviews:1},
+  {loc:'Gilbert, AZ',        rating:5.0,  reviews:4},
+  {loc:'Tigard, OR',         rating:5.0,  reviews:2},
+  {loc:'Kennewick, WA',      rating:5.0,  reviews:8},
+  {loc:'Clackamas, OR',      rating:5.0,  reviews:3},
+  {loc:'Vancouver, WA',      rating:5.0,  reviews:10},
+  {loc:'Lynnwood, WA',       rating:5.0,  reviews:2},
+  {loc:'Post Falls, ID',     rating:5.0,  reviews:20},
+  {loc:'Walla Walla, WA',    rating:4.88, reviews:8},
+  {loc:'Boise, ID',          rating:4.87, reviews:17},
+  {loc:'Bellingham, WA',     rating:4.62, reviews:21},
+  {loc:'Missoula, MT',       rating:4.63, reviews:8},
+  {loc:'Wenatchee, WA',      rating:4.17, reviews:6},
+  {loc:'Spokane, WA',        rating:4.07, reviews:30},
+  {loc:'Renton, WA',         rating:3.40, reviews:10},
+  {loc:'Univ. Place, WA',    rating:2.67, reviews:3},
+].sort((a,b)=>b.rating-a.rating);
+
+const ytdBody = document.getElementById('reviewsYtdBody');
+reviewsYtd.forEach(r => {
+  const stars = '⭐'.repeat(Math.round(r.rating));
+  const fillW = (r.rating/5)*100;
+  const badge = r.rating>=4.5?'<span class="rating-badge r-excellent">Excellent</span>':r.rating>=4.0?'<span class="rating-badge r-good">Good</span>':'<span class="rating-badge r-needs-work">Needs attention</span>';
+  const lowFlag = r.reviews<5?'<span style="font-size:10px;color:#94a3b8;margin-left:4px;">(few reviews)</span>':'';
+  ytdBody.innerHTML += `<tr>
+    <td class="loc">${r.loc}</td>
+    <td><strong>${r.rating.toFixed(2)} ⭐</strong></td>
+    <td><div style="display:flex;align-items:center;gap:6px;"><div class="bar-bg" style="width:100px;"><span class="bar-fill" style="width:${fillW}px;background:${STAR};"></span></div><span style="font-size:11px;color:${SAGE};">${r.rating.toFixed(2)}</span></div></td>
+    <td>${r.reviews}${lowFlag}</td>
+    <td>${badge}</td>
+  </tr>`;
+});
+
+// ── CAMPAIGNS ──
+const campaigns=[
+  {name:'GBP | Bremerton',     type:'GBP Smart', imp:43066, clicks:601,  ctr:'1.40%', cpc:'$1.26', cost:'$760',  conv:69},
+  {name:'GBP | Puyallup',      type:'GBP Smart', imp:39993, clicks:352,  ctr:'0.88%', cpc:'$1.17', cost:'$413',  conv:124},
+  {name:'[IBAG] SC Search',    type:'Search',    imp:36187, clicks:1038, ctr:'2.87%', cpc:'$0.56', cost:'$585',  conv:272},
+  {name:'GBP | Idaho Falls',   type:'GBP Smart', imp:32366, clicks:256,  ctr:'0.79%', cpc:'$1.31', cost:'$334',  conv:51},
+  {name:'GBP | Oregon',        type:'GBP Smart', imp:32360, clicks:367,  ctr:'1.13%', cpc:'$1.66', cost:'$609',  conv:90},
+  {name:'GBP | Salem',         type:'GBP Smart', imp:29729, clicks:216,  ctr:'0.73%', cpc:'$1.41', cost:'$304',  conv:46},
+  {name:'GBP | Olympia',       type:'GBP Smart', imp:25171, clicks:226,  ctr:'0.90%', cpc:'$1.36', cost:'$307',  conv:54},
+  {name:'GBP | Kalispell',     type:'GBP Smart', imp:22497, clicks:203,  ctr:'0.90%', cpc:'$2.26', cost:'$459',  conv:24},
+  {name:'GBP | Hillsboro',     type:'GBP Smart', imp:14296, clicks:276,  ctr:'1.93%', cpc:'$1.10', cost:'$305',  conv:46},
+  {name:'GBP | Missoula',      type:'GBP Smart', imp:14135, clicks:167,  ctr:'1.18%', cpc:'$2.72', cost:'$455',  conv:43},
+  {name:'Display Retargeting', type:'Display',   imp:5910,  clicks:373,  ctr:'6.31%', cpc:'$1.22', cost:'$456',  conv:18},
+  {name:'⚠️ Franchise Search', type:'Search',    imp:2354,  clicks:27,   ctr:'1.15%', cpc:'$1.67', cost:'$45',   conv:0},
+  {name:'GBP | Boise',         type:'GBP Smart', imp:436,   clicks:77,   ctr:'17.66%',cpc:'$2.49', cost:'$192',  conv:1},
+];
+const cbody=document.getElementById('campaignBody');
+campaigns.forEach(c=>{
+  const tb=c.type==='Search'?'<span class="src src-fb">Search</span>':c.type==='Display'?'<span class="src src-news">Display</span>':'<span class="src src-exit">GBP Smart</span>';
+  cbody.innerHTML+=`<tr><td class="loc">${c.name}</td><td>${tb}</td><td>${c.imp.toLocaleString()}</td><td>${c.clicks.toLocaleString()}</td><td>${c.ctr}</td><td>${c.cpc}</td><td><strong>${c.cost}</strong></td><td>${c.conv}</td></tr>`;
+});
+</script>
+</body>
+</html>
